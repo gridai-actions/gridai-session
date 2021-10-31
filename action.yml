@@ -45,8 +45,8 @@ runs:
   steps:
     - run: |
         grid session create ${{ inputs.cluster-name }} ${{ inputs.grid-args }} | tee grid.session.log
-        export obj_id=$(cat grid.session.log | awk -F':' '$1=/name:/ {print $2}' | tr -s '[:blank:]')
-        if [[ -z "${obj_id}" ]]; then
+        export obj_id=$(cat grid.session.log | awk -F':' '$1 ~ / +name$/ {print $2}' | tr -s '[:blank:]')
+        if [ -z "${obj_id}" ]; then
           echo "Error: 'name:[session name]' not found in output"
           exit 1
         else

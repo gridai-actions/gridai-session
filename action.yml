@@ -1,0 +1,90 @@
+name: "Grid.ai Run Artifact"
+inputs:
+  # required
+  script-name:
+    required: true
+    default: "run.py"
+    type: string   
+    description: "The name of the script to run"
+  script-dir:
+    required: false
+    default: "${GITHUB_WORKSPACE}"
+    type: string   
+    description: "Directory where the script is at"
+  # optional    
+  cluster-name:
+    required: false
+    default: ""
+    type: string    
+    description: "Arguments to grid run command"
+  grid-args:
+    required: false
+    default: "--localdir --instance_type t2.medium --dependency_file requirements.txt"
+    type: string    
+    description: "Arguments to grid run command"
+  script-args:
+    required: false
+    default: ""
+    type: string
+    description: "Arguments to the script"
+  success-status:
+    required: false
+    default: "succeeded"
+    type: string               
+    description: "grid run status text for successful execution"
+outputs:
+  obj-type:
+    value: ${{ steps.gridai-obj-status.outputs.obj-type }}
+    description: "object id searched for"
+  obj-id:
+    value: ${{ steps.gridai-obj-status.outputs.obj-id }}
+    description: "object id searched for"
+  obj-status:
+    value: ${{ steps.gridai-obj-status.outputs.obj-status }}
+    description: "comma delimited status all of objects. ex: succeeded,succeeded,stopped"
+  obj-tally:
+    value: ${{ steps.gridai-obj-status.outputs.obj-tally }}
+    description: "comma delimited tally status codes. ex: 2 succeeded,1 stopped"
+  obj-summary:
+    value: ${{ steps.gridai-obj-status.outputs.obj-summary }}
+    description: "comma delimited unique status codes. ex: succeeded,stopped"
+  obj-exit-code:
+    value: ${{ steps.gridai-obj-status.outputs.obj-exit-code }}
+    description: "0 if exited finding the supplied status, 1 otherwise"   
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        cd ${{ inputs.script-dir }}
+        pwd
+      shell: bash  
+    - run: |
+        cd ${{ inputs.script-dir }}
+        grid run ${{ inputs.cluster-name }} ${{ inputs.grid-args }} ${{ inputs.script-name }} ${{ inputs.script-args }} | tee grid.run.log
+        export run_name=$(cat grid.run.log | awk -F: '$1=/grid_name/ {print $2}' | tr -s '[:blank:]')
+        echo "run_name=${run_name}" >> $GITHUB_ENV           
+        if [[ -z "${run_name}" ]]; then
+          echo "Error: 'grid_name:[run_name]' not found in output"
+          exit 1
+        fi  
+      shell: bash  
+    - id: gridai-obj-status
+      uses: gridai-actions/gridai-status@v0
+      with:
+        obj-type: run
+        obj-id: ${run_name}
+    - run: |
+        if [ -z "$(echo ${{ steps.gridai-obj-status.outputs.obj-summary }} | grep '${{ inputs.success-status }}')" ]; then
+          exit 1
+        fi             
+      shell: bash  
+    - run: |
+        cd ${{ inputs.script-dir }}
+        pwd
+        grid artifacts ${{ env.run_name }}
+        if [[ $? != 0 ]]; then
+          echo "Error: ${run_name} artifacts not found"
+          exit 1
+        fi
+        find grid_artifacts -type f -print | sort
+      shell: bash  

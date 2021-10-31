@@ -28,16 +28,10 @@ jobs:
         uses: gridai-actions/gridai-session@main
         with:
           grid-args: "${{ matrix.use-spot }} --instance_type ${{ matrix.instance-type }}"
+      - run: | 
+          grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit" | tee grid.session.log
       - run: |
-          grid ssh-keys add lit_key ~/.ssh/id_ed25519.pub
-          echo ${{ steps.gridai-obj-create.outputs.obj-id }}
-          echo ${{ steps.gridai-obj-create.outputs.obj-type }}
-          echo ${{ steps.gridai-obj-create.outputs.obj-status }}
-          echo ${{ steps.gridai-obj-create.outputs.obj-summary }}
-          echo ${{ steps.gridai-obj-create.outputs.obj-tally }}
-          grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit"
-      - run: |
-          grid session pause ${{ steps.gridai-obj-create.outputs.obj-id }}
+          grid session pause ${{ steps.gridai-obj-create.outputs.obj-id }} 
       - id: gridai-obj-status-pause
         uses: gridai-actions/gridai-status@main
         with:
@@ -53,7 +47,7 @@ jobs:
           obj-id: ${{ steps.gridai-obj-create.outputs.obj-id }}
           obj-status: "^running$"  
       - run: |
-          grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit"                            
+          grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit" | tee grid.session.log                          
       - run: |
           grid session delete ${{ steps.gridai-obj-create.outputs.obj-id }}
    

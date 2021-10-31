@@ -44,7 +44,7 @@ runs:
   using: "composite"
   steps:
     - run: |
-        grid session ${{ inputs.cluster-name }} ${{ inputs.grid-args }} | tee grid.session.log
+        grid session create ${{ inputs.cluster-name }} ${{ inputs.grid-args }} | tee grid.session.log
         export obj_id=$(cat grid.session.log | awk -F: '$1=/name/ {print $2}' | tr -s '[:blank:]')
         echo "obj_id=${obj_id}" >> $GITHUB_ENV           
         if [[ -z "${obj_id}" ]]; then

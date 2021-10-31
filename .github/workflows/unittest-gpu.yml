@@ -1,9 +1,9 @@
-name: 'Grid.ai Session CPU'
+name: 'Grid.ai Session GPU'
 on:
   push:
     paths:
       - action.yml
-      - .github/workflows/unittest-cpu.yml
+      - .github/workflows/unittest-gpu.yml
 jobs:
   unittests:
     strategy:
@@ -13,7 +13,7 @@ jobs:
         os: [ubuntu-latest, macos-latest,windows-latest]
         python-version: [3.8 ,3.9]       
         python-venv: ["", "venv"]       
-        instance-type: [t2.medium]       
+        instance-type: [g4dn.xlarge]       
         use-spot: ["", "--use_spot"]       
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20

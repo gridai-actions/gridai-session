@@ -27,6 +27,11 @@ jobs:
         uses: gridai-actions/gridai-session@main
       - run: |
           grid ssh-keys add lit_key ~/.ssh/id_ed25519.pub
+          echo ${{ steps.gridai-obj-create.outputs.obj-id }}
+          echo ${{ steps.gridai-obj-create.outputs.obj-type }}
+          echo ${{ steps.gridai-obj-create.outputs.obj-status }}
+          echo ${{ steps.gridai-obj-create.outputs.obj-summary }}
+          echo ${{ steps.gridai-obj-create.outputs.obj-tally }}
           grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit"
       - run: |
           grid session pause ${{ steps.gridai-obj-create.outputs.obj-id }}

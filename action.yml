@@ -1,27 +1,16 @@
-name: "Grid.ai Run Artifact"
+name: "Grid.ai Session"
 inputs:
-  # required
-  script-name:
-    required: true
-    default: "run.py"
-    type: string   
-    description: "The name of the script to run"
-  script-dir:
-    required: false
-    default: "${GITHUB_WORKSPACE}"
-    type: string   
-    description: "Directory where the script is at"
   # optional    
   cluster-name:
     required: false
     default: ""
     type: string    
-    description: "Arguments to grid run command"
+    description: "Cluster name to use"
   grid-args:
     required: false
-    default: "--localdir --instance_type t2.medium --dependency_file requirements.txt"
+    default: "--instance_type t2.medium"
     type: string    
-    description: "Arguments to grid run command"
+    description: "Arguments to grid session create command"
   script-args:
     required: false
     default: ""
@@ -29,9 +18,9 @@ inputs:
     description: "Arguments to the script"
   success-status:
     required: false
-    default: "succeeded"
+    default: "^running$"
     type: string               
-    description: "grid run status text for successful execution"
+    description: "regular expresseion to grep checking status"
 outputs:
   obj-type:
     value: ${{ steps.gridai-obj-status.outputs.obj-type }}
@@ -55,36 +44,21 @@ runs:
   using: "composite"
   steps:
     - run: |
-        cd ${{ inputs.script-dir }}
-        pwd
-      shell: bash  
-    - run: |
-        cd ${{ inputs.script-dir }}
-        grid run ${{ inputs.cluster-name }} ${{ inputs.grid-args }} ${{ inputs.script-name }} ${{ inputs.script-args }} | tee grid.run.log
-        export run_name=$(cat grid.run.log | awk -F: '$1=/grid_name/ {print $2}' | tr -s '[:blank:]')
-        echo "run_name=${run_name}" >> $GITHUB_ENV           
-        if [[ -z "${run_name}" ]]; then
-          echo "Error: 'grid_name:[run_name]' not found in output"
+        grid session ${{ inputs.cluster-name }} ${{ inputs.grid-args }} | tee grid.session.log
+        export obj_id=$(cat grid.session.log | awk -F: '$1=/name/ {print $2}' | tr -s '[:blank:]')
+        echo "obj_id=${obj_id}" >> $GITHUB_ENV           
+        if [[ -z "${obj_id}" ]]; then
+          echo "Error: 'name:[obj_id]' not found in output"
           exit 1
         fi  
       shell: bash  
     - id: gridai-obj-status
       uses: gridai-actions/gridai-status@v0
       with:
-        obj-type: run
-        obj-id: ${run_name}
+        obj-type: session
+        obj-id: ${obj_id}
     - run: |
         if [ -z "$(echo ${{ steps.gridai-obj-status.outputs.obj-summary }} | grep '${{ inputs.success-status }}')" ]; then
           exit 1
         fi             
-      shell: bash  
-    - run: |
-        cd ${{ inputs.script-dir }}
-        pwd
-        grid artifacts ${{ env.run_name }}
-        if [[ $? != 0 ]]; then
-          echo "Error: ${run_name} artifacts not found"
-          exit 1
-        fi
-        find grid_artifacts -type f -print | sort
       shell: bash  

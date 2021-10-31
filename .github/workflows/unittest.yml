@@ -1,10 +1,9 @@
-name: 'Grid.ai Run Git Clone'
+name: 'Grid.ai Session CPU'
 on:
   push:
     paths:
       - action.yml
       - .github/workflows/unittest.yml
-
 jobs:
   unittests:
     strategy:
@@ -14,6 +13,8 @@ jobs:
         os: [ubuntu-latest] # , macos-latest,windows-latest]
         python-version: [3.8] #,3.9]       
         python-venv: [""] #,"venv"]       
+        instance-type: [t2.medium] #, g4dn.xlarge]       
+        use-spot: [""] # , "--use_spot"]       
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     steps:
@@ -25,6 +26,8 @@ jobs:
           gridai-key: ${{ secrets.GRIDAI_KEY }} 
       - id: gridai-obj-create
         uses: gridai-actions/gridai-session@main
+        with:
+          grid-args: "${{ matrix.use-spot }} --instance_type ${{ matrix.instance-type }}"
       - run: |
           grid ssh-keys add lit_key ~/.ssh/id_ed25519.pub
           echo ${{ steps.gridai-obj-create.outputs.obj-id }}

@@ -30,7 +30,7 @@ jobs:
           grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit"
       - run: |
           grid session pause ${{ steps.gridai-obj-create.outputs.obj-id }}
-      - id: gridai-obj-status
+      - id: gridai-obj-status-pause
         uses: gridai-actions/gridai-status@main
         with:
           obj-type: session
@@ -38,7 +38,7 @@ jobs:
           obj-status: "^paused$"
       - run: |
           grid session resume ${{ steps.gridai-obj-create.outputs.obj-id }}
-      - id: gridai-obj-status
+      - id: gridai-obj-status-resume
         uses: gridai-actions/gridai-status@main
         with:
           obj-type: session

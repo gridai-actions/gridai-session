@@ -54,7 +54,7 @@ runs:
         fi  
       shell: bash  
     - id: gridai-obj-status
-      uses: gridai-actions/gridai-status@v0
+      uses: gridai-actions/gridai-status@main
       with:
         obj-type: session
         obj-id: ${obj_id}

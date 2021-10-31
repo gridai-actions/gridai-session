@@ -35,7 +35,7 @@ jobs:
         with:
           obj-type: session
           obj-id: ${{ steps.gridai-obj-create.outputs.obj-id }}
-          obj-status: "^paused$"
+          script-args: '-t "^paused$"'
       - run: |
           grid session resume ${{ steps.gridai-obj-create.outputs.obj-id }}
       - id: gridai-obj-status-resume

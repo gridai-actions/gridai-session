@@ -36,7 +36,7 @@ jobs:
       - id: gridai-obj-create
         uses: gridai-actions/gridai-session@main
         with:
-          grid-args: "${{ matrix.use-spot }} --instance_type ${{ input.instance-type }}"
+          grid-args: "${{ matrix.use-spot }} --instance_type ${{ inputs.instance-type }}"
       - run: | 
           grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit" | tee grid.session.log
       - run: |

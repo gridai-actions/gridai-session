@@ -1,0 +1,16 @@
+name: 'Session Ubuntu'
+on:
+  push:
+    paths:
+      - action.yml
+      - .github/workflows/workflow-session.yml
+      - .github/workflows/unittest-ubuntu.yml
+jobs:
+  login:
+    uses: gridai-actions/gridai-login/.github/workflows/unittest.yml@main
+    with:
+      os: ubuntu-latest
+      instance-type: t2.medium
+    secrets:  
+      gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
+      gridai-key: ${{ secrets.GRIDAI_KEY }}      

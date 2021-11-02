@@ -12,3 +12,10 @@ This action performs the following:
 - Download artifacts
 
 
+#
+
+```
+grid session | awk -F'│' '$3 ~ /.*running.*/ {print $2}' | while read s; do echo $s; done
+grid session | awk -F'│' '$3 ~ /.*running.*/ {print $2}' | while read s; do echo $s; grid session delete $s; done
+
+```

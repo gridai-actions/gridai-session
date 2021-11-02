@@ -1,33 +1,42 @@
 name: 'Grid.ai Session CPU'
 on:
-  push:
-    paths:
-      - action.yml
-      - .github/workflows/unittest-cpu.yml
+  workflow_call:
+    inputs:
+      # CLI Environment Variations
+      os:
+        required: true
+        type: string 
+      instance-type:
+        required: true  
+        type: string
+    secrets:
+      # CLI Logins
+      gridai-username:
+        required: true
+      gridai-key:
+        required: true
 jobs:
   unittests:
     strategy:
       fail-fast: false
       max-parallel: 1
       matrix:
-        os: [ubuntu-latest, macos-latest,windows-latest]
-        python-version: [3.8 ,3.9]       
-        python-venv: ["", "venv"]        
-        instance-type: ["t2.medium"]       
-        use-spot: ["", "--use_spot"]       
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+        python-version: [3.8] #,3.9]       
+        python-venv: [""] # ,"venv"]     
+        use-spot: [""] # , "--use_spot"]
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 60
     steps:
       - uses: gridai-actions/gridai-login@main
         with:
           python-version: ${{ matrix.python-version }}
           python-venv: ${{ matrix.python-venv }}
-          gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
-          gridai-key: ${{ secrets.GRIDAI_KEY }} 
+          gridai-username: ${{ secrets.gridai-username }} 
+          gridai-key: ${{ secrets.gridai-key }} 
       - id: gridai-obj-create
         uses: gridai-actions/gridai-session@main
         with:
-          grid-args: "${{ matrix.use-spot }} --instance_type ${{ matrix.instance-type }}"
+          grid-args: "${{ matrix.use-spot }} --instance_type ${{ input.instance-type }}"
       - run: | 
           grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit" | tee grid.session.log
       - run: |
@@ -45,7 +54,7 @@ jobs:
         with:
           obj-type: session
           obj-id: ${{ steps.gridai-obj-create.outputs.obj-id }}
-          script-args: "-t running"  
+          script-args: "-t "running"'  
       - run: |
           grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit" | tee grid.session.log                          
       - run: |

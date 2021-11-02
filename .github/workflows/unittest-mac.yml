@@ -7,7 +7,7 @@ on:
       - .github/workflows/unittest-mac.yml
 jobs:
   login:
-    uses: gridai-actions/gridai-login/.github/workflows/unittest.yml@main
+    uses: gridai-actions/gridai-login/.github/workflows/workflow-session.yml@main
     with:
       os: ubuntu-latest
       instance-type: t2.medium

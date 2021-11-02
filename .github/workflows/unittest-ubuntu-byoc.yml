@@ -1,4 +1,4 @@
-name: 'Session Ubuntu'
+name: 'Session Ubuntu BYOC'
 on:
   push:
     paths:

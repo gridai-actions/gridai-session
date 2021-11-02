@@ -47,7 +47,7 @@ runs:
         if [ -z "${{ inputs.cluster-name }}" ]; then
           echo "CLUSTER_NAME=" >> $GITHUB_ENV
         else
-          echo "CLUSTER_NAME='--cluster ${{ inputs.cluster-name }}" >> $GITHUB_ENV
+          echo "CLUSTER_NAME=--cluster ${{ inputs.cluster-name }}" >> $GITHUB_ENV
         fi  
       shell: bash  
     - run: |

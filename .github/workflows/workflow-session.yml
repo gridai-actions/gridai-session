@@ -1,4 +1,4 @@
-name: 'Grid.ai Session CPU'
+name: 'Workflow Session'
 on:
   workflow_call:
     inputs:

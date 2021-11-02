@@ -9,6 +9,7 @@ jobs:
   cpu-session:
     uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main
     with:
+      cluster-name: c211102-192711
       os: ubuntu-latest
       instance-type: t2.medium
     secrets:  
@@ -17,6 +18,7 @@ jobs:
   gpu-session:
     uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main
     with:
+      cluster-name: c211102-192711
       os: ubuntu-latest
       instance-type: g4dn.xlarge
     secrets:  

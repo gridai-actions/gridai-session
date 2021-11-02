@@ -9,6 +9,10 @@ on:
       instance-type:
         required: true  
         type: string
+      cluster-name:
+        required: false
+        default: ""  
+        type: string
     secrets:
       # CLI Logins
       gridai-username:
@@ -21,9 +25,9 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        python-version: [3.8] #,3.9]       
-        python-venv: [""]     # ,"venv"]     
-        use-spot: [""]        # , "--use_spot"]
+        python-version: [3.8, 3.9]       
+        python-venv: ["","venv"]     
+        use-spot: ["", "--use_spot"]
     runs-on: ${{ inputs.os }}
     timeout-minutes: 60
     steps:
@@ -36,7 +40,8 @@ jobs:
       - id: gridai-obj-create
         uses: gridai-actions/gridai-session@main
         with:
-          grid-args: "${{ matrix.use-spot }} --instance_type ${{ inputs.instance-type }}"
+          cluster-name: ${{ inputs.cluster-name }}
+          grid-args: "${{ matrix.use-spot }} --instance_type ${{ inputs.instance-type }} "
       - run: | 
           grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit" | tee grid.session.log
       - run: |

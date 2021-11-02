@@ -44,7 +44,14 @@ runs:
   using: "composite"
   steps:
     - run: |
-        grid session create ${{ inputs.cluster-name }} ${{ inputs.grid-args }} | tee grid.session.log
+        if [ -z "${{ inputs.cluster-name }}" ]; then
+          echo "CLUSTER_NAME=" >> $GITHUB_ENV
+        else
+          echo "CLUSTER_NAME='--cluster ${{ inputs.cluster-name }}" >> $GITHUB_ENV
+        fi  
+      shell: bash  
+    - run: |
+        grid session create ${CLUSTER_NAME} ${{ inputs.grid-args }} | tee grid.session.log
         export obj_id=$(cat grid.session.log | awk -F':' '$1 ~ /^ +name$/ {print $2}' | tr -s '[:blank:]')
         if [ -z "${obj_id}" ]; then
           echo "Error: 'name:[session name]' not found in output"

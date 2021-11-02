@@ -1,6 +1,6 @@
-[![Grid.ai Run Checkout](https://github.com/gridai-actions/gridai-run/actions/workflows/unittest-checkout.yml/badge.svg)](https://github.com/gridai-actions/gridai-run/actions/workflows/unittest-checkout.yml)
-[![Grid.ai Run Git Clone](https://github.com/gridai-actions/gridai-run/actions/workflows/unittest-gitclone.yml/badge.svg)](https://github.com/gridai-actions/gridai-run/actions/workflows/unittest-gitclone.yml)
-[![Grid.ai Run Local Dir](https://github.com/gridai-actions/gridai-run/actions/workflows/unittest-localdir.yml/badge.svg)](https://github.com/gridai-actions/gridai-run/actions/workflows/unittest-localdir.yml)
+[![Session Ubuntu](https://github.com/gridai-actions/gridai-session/actions/workflows/unittest-ubuntu.yml/badge.svg)](https://github.com/gridai-actions/gridai-session/actions/workflows/unittest-ubuntu.yml) 
+[![Session Mac](https://github.com/gridai-actions/gridai-session/actions/workflows/unittest-mac.yml/badge.svg)](https://github.com/gridai-actions/gridai-session/actions/workflows/unittest-mac.yml) 
+[![Session Win](https://github.com/gridai-actions/gridai-session/actions/workflows/unittest-win.yml/badge.svg)](https://github.com/gridai-actions/gridai-session/actions/workflows/unittest-win.yml)
 
 Run on Grid.ai and download artifacts on success.  
 

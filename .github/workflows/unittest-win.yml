@@ -6,7 +6,7 @@ on:
       - .github/workflows/workflow-session.yml
       - .github/workflows/unittest-win.yml
 jobs:
-  login:
+  cpu-session:
     uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main
     with:
       os: ubuntu-latest

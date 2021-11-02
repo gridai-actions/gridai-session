@@ -22,8 +22,8 @@ jobs:
       max-parallel: 1
       matrix:
         python-version: [3.8] #,3.9]       
-        python-venv: [""] # ,"venv"]     
-        use-spot: [""] # , "--use_spot"]
+        python-venv: [""]     # ,"venv"]     
+        use-spot: [""]        # , "--use_spot"]
     runs-on: ${{ inputs.os }}
     timeout-minutes: 60
     steps:
@@ -46,7 +46,7 @@ jobs:
         with:
           obj-type: session
           obj-id: ${{ steps.gridai-obj-create.outputs.obj-id }}
-          script-args: '-t "paused"'
+          script-args: "-t paused"
       - run: |
           grid session resume ${{ steps.gridai-obj-create.outputs.obj-id }}
       - id: gridai-obj-status-resume
@@ -54,7 +54,7 @@ jobs:
         with:
           obj-type: session
           obj-id: ${{ steps.gridai-obj-create.outputs.obj-id }}
-          script-args: "-t "running"'  
+          script-args: "-t running"
       - run: |
           grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit" | tee grid.session.log                          
       - run: |

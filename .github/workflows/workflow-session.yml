@@ -8,7 +8,8 @@ on:
         type: string 
       # grid session variations
       name:
-        required: false  
+        required: false
+        default: s$(date '+%y%m%d-%H%M%S') 
         type: string
       description:
         required: false
@@ -60,7 +61,7 @@ jobs:
       - id: gridai-obj-create
         run: |
           export GRID_ARGS=""
-          if [ ! -z "${{inputs.name}}" ]; then GRID_ARGS="--name ${{inputs.name}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.name}}" ]; then GRID_ARGS="--name ${{inputs.name}} $GRID_ARGS"; else fi
           if [ ! -z "${{inputs.description}}" ]; then GRID_ARGS="--description ${{inputs.description}} $GRID_ARGS"; fi
           if [ ! -z "${{inputs.cluster}}" ]; then GRID_ARGS="--cluster ${{inputs.cluster}} $GRID_ARGS"; fi
           if [ ! -z "${{inputs.instance_type}}" ]; then GRID_ARGS="--instance_type ${{inputs.instance_type}} $GRID_ARGS"; fi
@@ -80,6 +81,6 @@ jobs:
           fi             
       - id: gridai-obj-delete
         run: |
-          gridai.py cli "grid session delete ${{ steps.gridai-obj-create.outputs.name }} --gha True
+          gridai.py cli "grid session delete ${{ steps.gridai-obj-create.outputs.name }}" --gha True
          
 

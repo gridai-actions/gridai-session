@@ -12,7 +12,8 @@ jobs:
       instance_type: t2.medium
     secrets:  
       gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
-      gridai-key: ${{ secrets.GRIDAI_KEY }}      
+      gridai-key: ${{ secrets.GRIDAI_KEY }}   
+
   # make this run serially
   gpu-session:
     needs: cpu-session

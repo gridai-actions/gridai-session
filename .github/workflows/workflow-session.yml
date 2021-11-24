@@ -84,6 +84,7 @@ jobs:
 
       # pause
       - id: gridai-obj-create-2
+        run: |
           gridai.py cli "grid session pause ${{ steps.gridai-obj-create.outputs.name }}"
       - id: gridai-obj-status-2
         run: |
@@ -95,6 +96,7 @@ jobs:
 
       # resume
       - id: gridai-obj-create-3
+        run: |
           gridai.py cli "grid session resume ${{ steps.gridai-obj-create.outputs.name }}"
       - id: gridai-obj-status-3
         run: |

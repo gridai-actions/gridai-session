@@ -64,6 +64,11 @@ jobs:
           gridai-username: ${{ secrets.gridai-username }} 
           gridai-key: ${{ secrets.gridai-key }} 
 
+      - run: |
+          pwd
+          ls
+          echo "hi" > test.txt
+          
       # create
       - id: gridai-obj-create
         run: |

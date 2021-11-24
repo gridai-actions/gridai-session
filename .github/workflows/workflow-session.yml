@@ -6,13 +6,34 @@ on:
       os:
         required: true
         type: string 
-      instance-type:
-        required: true  
+      # grid session variations
+      name:
+        required: false  
         type: string
-      cluster-name:
+      description:
         required: false
-        default: ""  
         type: string
+      cluster:
+        required: false
+        type: string
+      instance_type:
+        required: false
+        type: string        
+      use_spot:
+        required: false
+        type: string        
+      disk_size:
+        required: false
+        type: string        
+      datastore_name:
+        required: false
+        type: string        
+      datastore_version:
+        required: false
+        type: string        
+      datastore_mount_dir:
+        required: false
+        type: string        
     secrets:
       # CLI Logins
       gridai-username:
@@ -27,7 +48,6 @@ jobs:
       matrix:
         python-version: [3.8, 3.9]       
         python-venv: ["","venv"]     
-        use-spot: ["", "--use_spot"]
     runs-on: ${{ inputs.os }}
     timeout-minutes: 60
     steps:
@@ -38,30 +58,28 @@ jobs:
           gridai-username: ${{ secrets.gridai-username }} 
           gridai-key: ${{ secrets.gridai-key }} 
       - id: gridai-obj-create
-        uses: gridai-actions/gridai-session@main
-        with:
-          cluster-name: ${{ inputs.cluster-name }}
-          grid-args: "${{ matrix.use-spot }} --instance_type ${{ inputs.instance-type }} "
-      - run: | 
-          grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit" | tee grid.session.log
+        run: |
+          export GRID_ARGS=""
+          if [ ! -z "${{inputs.name}}" ]; GRID_ARGS="--name ${{inputs.name}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.description}}" ]; GRID_ARGS="--description ${{inputs.description}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.cluster}}" ]; GRID_ARGS="--cluster ${{inputs.cluster}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.instance_type}}" ]; GRID_ARGS="--instance_type ${{inputs.instance_type}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.use_spot}}" ]; GRID_ARGS="--use_spot $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.disk_size}}" ]; GRID_ARGS="--disk_size ${{inputs.disk_size}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.datastore_name}}" ]; GRID_ARGS="--datastore_name ${{inputs.datastore_name}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.datastore_version}}" ]; GRID_ARGS="--datastore_version ${{inputs.datastore_version}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.datastore_mount_dir}}" ]; GRID_ARGS="--datastore_mount_dir ${{inputs.datastore_mount_dir}} $GRID_ARGS"; fi
+
+          gridai.py cli "grid session create ${GRID_ARGS}" status_to_kv --gha True
+      - id: gridai-obj-status
+        run: |
+          gridai.py session ${{ steps.gridai-obj-create.outputs.name }} --gha True
       - run: |
-          grid session pause ${{ steps.gridai-obj-create.outputs.obj-id }} 
-      - id: gridai-obj-status-pause
-        uses: gridai-actions/gridai-status@main
-        with:
-          obj-type: session
-          obj-id: ${{ steps.gridai-obj-create.outputs.obj-id }}
-          script-args: "-t paused"
-      - run: |
-          grid session resume ${{ steps.gridai-obj-create.outputs.obj-id }}
-      - id: gridai-obj-status-resume
-        uses: gridai-actions/gridai-status@main
-        with:
-          obj-type: session
-          obj-id: ${{ steps.gridai-obj-create.outputs.obj-id }}
-          script-args: "-t running"
-      - run: |
-          grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit" | tee grid.session.log                          
-      - run: |
-          grid session delete ${{ steps.gridai-obj-create.outputs.obj-id }}
-   
+          if [ -z "$(echo ${{ steps.gridai-obj-status.outputs.obj-summary }} | grep -i 'running')" ]; then
+            exit 1
+          fi             
+      - id: gridai-obj-delete
+        run: |
+          gridai.py cli "grid session delete ${{ steps.gridai-obj-create.outputs.name }} --gha True
+         
+

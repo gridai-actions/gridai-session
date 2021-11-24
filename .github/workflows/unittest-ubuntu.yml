@@ -10,7 +10,7 @@ jobs:
     uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main
     with:
       os: ubuntu-latest
-      instance-type: t2.medium
+      instance_type: t2.medium
     secrets:  
       gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
       gridai-key: ${{ secrets.GRIDAI_KEY }}      
@@ -18,7 +18,7 @@ jobs:
     uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main
     with:
       os: ubuntu-latest
-      instance-type: g4dn.xlarge
+      instance_type: g4dn.xlarge
     secrets:  
       gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
       gridai-key: ${{ secrets.GRIDAI_KEY }}  

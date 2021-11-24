@@ -60,15 +60,15 @@ jobs:
       - id: gridai-obj-create
         run: |
           export GRID_ARGS=""
-          if [ ! -z "${{inputs.name}}" ]; GRID_ARGS="--name ${{inputs.name}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.description}}" ]; GRID_ARGS="--description ${{inputs.description}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.cluster}}" ]; GRID_ARGS="--cluster ${{inputs.cluster}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.instance_type}}" ]; GRID_ARGS="--instance_type ${{inputs.instance_type}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.use_spot}}" ]; GRID_ARGS="--use_spot $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.disk_size}}" ]; GRID_ARGS="--disk_size ${{inputs.disk_size}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.datastore_name}}" ]; GRID_ARGS="--datastore_name ${{inputs.datastore_name}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.datastore_version}}" ]; GRID_ARGS="--datastore_version ${{inputs.datastore_version}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.datastore_mount_dir}}" ]; GRID_ARGS="--datastore_mount_dir ${{inputs.datastore_mount_dir}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.name}}" ]; then GRID_ARGS="--name ${{inputs.name}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.description}}" ]; then GRID_ARGS="--description ${{inputs.description}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.cluster}}" ]; then GRID_ARGS="--cluster ${{inputs.cluster}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.instance_type}}" ]; then GRID_ARGS="--instance_type ${{inputs.instance_type}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.use_spot}}" ]; then GRID_ARGS="--use_spot $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.disk_size}}" ]; then GRID_ARGS="--disk_size ${{inputs.disk_size}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.datastore_name}}" ]; then GRID_ARGS="--datastore_name ${{inputs.datastore_name}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.datastore_version}}" ]; then GRID_ARGS="--datastore_version ${{inputs.datastore_version}} $GRID_ARGS"; fi
+          if [ ! -z "${{inputs.datastore_mount_dir}}" ]; then GRID_ARGS="--datastore_mount_dir ${{inputs.datastore_mount_dir}} $GRID_ARGS"; fi
 
           gridai.py cli "grid session create ${GRID_ARGS}" status_to_kv --gha True
       - id: gridai-obj-status

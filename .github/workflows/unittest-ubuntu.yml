@@ -2,7 +2,6 @@ name: 'Session Ubuntu'
 on:
   push:
     paths:
-      - action.yml
       - .github/workflows/workflow-session.yml
       - .github/workflows/unittest-ubuntu.yml
 jobs:
@@ -14,7 +13,9 @@ jobs:
     secrets:  
       gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
       gridai-key: ${{ secrets.GRIDAI_KEY }}      
+  # make this run serially
   gpu-session:
+    needs: cpu-session
     uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main
     with:
       os: ubuntu-latest

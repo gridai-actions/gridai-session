@@ -10,6 +10,15 @@ on:
   # MIN HOUR DOM MON DOW CMD
     - cron: 23 5 * * *            
 jobs:
+  unittests:  
+    runs-on: ubuntu
+    timeout-minutes: 60
+    steps:
+      - uses: gridai-actions/gridai-login@v0
+        with:
+          gridai-username: ${{ secrets.gridai-username }} 
+          gridai-key: ${{ secrets.gridai-key }} 
+      
   cpu-session:
     uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main
     with:

@@ -12,7 +12,7 @@ on:
     - cron: 23 6 * * *            
 jobs:
   win:
-    uses: gridai-actions/gridai-run/.github/workflows/workflow-checkout.yml@main
+    uses: gridai-actions/gridai-run/.github/workflows/workflow-session.yml@main
     with:
       os: windows-latest
       instance_type: t2.medium

@@ -1,14 +1,14 @@
-name: 'Grid.ai Session CPU'
+name: 'Grid.ai Session GPU'
 on:
   workflow_dispatch:
   push:
     paths:
       - action.yml
-      - .github/workflows/unittest-cpu.yml
+      - .github/workflows/unittest-gpu.yml
   schedule:
   # run at 13 min past the hour every day
   # MIN HOUR DOM MON DOW CMD
-    - cron: 23 2 * * *      
+    - cron: 23 3 * * *            
 jobs:
   unittests:
     strategy:
@@ -17,8 +17,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest,windows-latest]
         python-version: [3.8 ,3.9]       
-        python-venv: ["", "venv"]        
-        instance_type: ["t2.medium"]       
+        python-venv: ["", "venv"]       
+        instance-type: [g4dn.xlarge]       
         use-spot: ["", "--use_spot"]       
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
@@ -50,7 +50,7 @@ jobs:
         with:
           obj-type: session
           obj-id: ${{ steps.gridai-obj-create.outputs.obj-id }}
-          script-args: "-t running"  
+          script-args: "-t "running"'  
       - run: |
           grid session ssh ${{ steps.gridai-obj-create.outputs.obj-id }} "ls; exit" | tee grid.session.log                          
       - run: |

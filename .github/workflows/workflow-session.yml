@@ -77,31 +77,31 @@ jobs:
           gridai.py create_sess --grid_args " ${GRID_ARGS}" --gha True
 
       - run: |
-          if [ "${{ steps.gridai-obj-status.outputs.match-status }}" != "running" ]; then
+          if [ "${{ steps.gridai-obj-create.outputs.match-status }}" != "running" ]; then
             exit 1
           fi
 
       # pause
-      - id: gridai-obj-create-2
+      - id: gridai-obj-pause
         run: |
           gridai.py cli "grid session pause ${{ steps.gridai-obj-create.outputs.name }}"
-      - id: gridai-obj-status-2
+      - id: gridai-obj-pause-2
         run: |
           gridai.py status_sess ${{ steps.gridai-obj-create.outputs.name }} --status3 'paused' --gha True
       - run: |
-          if [ "${{ steps.gridai-obj-status-2.outputs.match-status }}" != "paused" ]; then
+          if [ "${{ steps.gridai-obj-pause-2.outputs.match-status }}" != "paused" ]; then
             exit 1
           fi
 
       # resume
-      - id: gridai-obj-create-3
+      - id: gridai-obj-resume
         run: |
           gridai.py cli "grid session resume ${{ steps.gridai-obj-create.outputs.name }}"
-      - id: gridai-obj-status-3
+      - id: gridai-obj-resume-2
         run: |
           gridai.py status_sess ${{ steps.gridai-obj-create.outputs.name }} --status3 'running' --gha True
       - run: |
-          if [ "${{ steps.gridai-obj-status-3.outputs.match-status }}" != "running" ]; then
+          if [ "${{ steps.gridai-obj-resume-2.outputs.match-status }}" != "running" ]; then
             exit 1
           fi
 

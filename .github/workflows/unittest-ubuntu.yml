@@ -16,9 +16,10 @@ jobs:
     steps:
       - uses: gridai-actions/gridai-login@v0
         with:
-          gridai-username: ${{ secrets.gridai-username }} 
-          gridai-key: ${{ secrets.gridai-key }} 
+          gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
+          gridai-key: ${{ secrets.GRIDAI_KEY }} 
       - id: gridai-obj-create
+      - run: |
           gridai.py create_sess --grid_args " ${GRID_ARGS}" --gha True
       - run: |
           if [ "${{ steps.gridai-obj-create.outputs.match-status }}" != "running" ]; then

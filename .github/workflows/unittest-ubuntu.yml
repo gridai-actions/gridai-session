@@ -10,8 +10,8 @@ on:
   # MIN HOUR DOM MON DOW CMD
     - cron: 23 5 * * *            
 jobs:
-  unittests:  
-    runs-on: ubuntu
+  create_session:  
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: gridai-actions/gridai-login@v0
@@ -20,6 +20,7 @@ jobs:
           gridai-key: ${{ secrets.gridai-key }} 
       
   cpu-session:
+    needs: create_session
     uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main
     with:
       os: ubuntu-latest

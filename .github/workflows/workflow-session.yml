@@ -134,10 +134,10 @@ jobs:
           gridai.py cli "grid session delete ${{ steps.gridai-obj-create.outputs.name }}" --gha True
       - id: gridai-obj-delete-2
         run: |
-          # no status2 is accepted as the object should be deleted
-          gridai.py status_sess ${{ steps.gridai-obj-create.outputs.name }} --filter1_len 0 --status2 "^$" --gha True
+          # status3=".*" will fail when a session in terminate state and additional polling is required
+          gridai.py status_sess ${{ steps.gridai-obj-create.outputs.name }} --filter1_len 0 --status3 ".*" --gha True
       - run: |
-          if [ "${{ steps.gridai-obj-delete-2.outputs.obj-exit-code }}" == "0" && "${{ steps.gridai-obj-delete-2.outputs.filter1-cnt }}" == "0" ]; then
+          if [[ "${{ steps.gridai-obj-delete-2.outputs.obj-exit-code }}" == "0" && "${{ steps.gridai-obj-delete-2.outputs.filter1-cnt }}" == "0" ]]; then
             echo "session delete: success"
           else
             echo "session delete: fail - ${{ steps.gridai-obj-create.outputs.name }} still exists in ${{ steps.gridai-obj-create.outputs.match-status }}"

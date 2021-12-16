@@ -30,12 +30,12 @@ jobs:
           fi
 
   cpu-session:
-    needs: create_session
+    needs: create-session
     uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main
     with:
       os: ubuntu-latest
       instance_type: t2.medium
-      name: {{ needs.create-session.outputs.name }}
+      name: ${{ needs.create-session.outputs.name }}
     secrets:  
       gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
       gridai-key: ${{ secrets.GRIDAI_KEY }}   

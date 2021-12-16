@@ -1,10 +1,15 @@
 name: 'Session Win'
 on:
+  workflow_dispatch:
   push:
     paths:
       - action.yml
       - .github/workflows/workflow-session.yml
       - .github/workflows/unittest-win.yml
+  schedule:
+  # run at 13 min past the hour every day
+  # MIN HOUR DOM MON DOW CMD
+    - cron: 23 6 * * *            
 jobs:
   win:
     uses: gridai-actions/gridai-run/.github/workflows/workflow-checkout.yml@main

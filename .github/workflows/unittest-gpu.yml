@@ -1,9 +1,14 @@
 name: 'Grid.ai Session GPU'
 on:
+  workflow_dispatch:
   push:
     paths:
       - action.yml
       - .github/workflows/unittest-gpu.yml
+  schedule:
+  # run at 13 min past the hour every day
+  # MIN HOUR DOM MON DOW CMD
+    - cron: 23 3 * * *            
 jobs:
   unittests:
     strategy:

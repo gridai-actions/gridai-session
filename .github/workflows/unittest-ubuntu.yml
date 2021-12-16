@@ -1,9 +1,14 @@
 name: 'Session Ubuntu'
 on:
+  workflow_dispatch:
   push:
     paths:
       - .github/workflows/workflow-session.yml
       - .github/workflows/unittest-ubuntu.yml
+  schedule:
+  # run at 13 min past the hour every day
+  # MIN HOUR DOM MON DOW CMD
+    - cron: 23 5 * * *            
 jobs:
   cpu-session:
     uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main

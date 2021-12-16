@@ -52,23 +52,14 @@ jobs:
     runs-on: ${{ inputs.os }}
     timeout-minutes: 60
     steps:
-      - run: |
-          pwd
-          ls
-          echo "hi" > test.txt
 
-      - uses: gridai-actions/gridai-login@main
+      - uses: gridai-actions/gridai-login@v0
         with:
           python-version: ${{ matrix.python-version }}
           python-venv: ${{ matrix.python-venv }}
           gridai-username: ${{ secrets.gridai-username }} 
           gridai-key: ${{ secrets.gridai-key }} 
 
-      - run: |
-          pwd
-          ls
-          echo "hi" > test.txt
-          
       # create
       - id: gridai-obj-create
         run: |
@@ -83,12 +74,10 @@ jobs:
           if [ ! -z "${{inputs.datastore_version}}" ]; then GRID_ARGS="--datastore_version ${{inputs.datastore_version}} $GRID_ARGS"; fi
           if [ ! -z "${{inputs.datastore_mount_dir}}" ]; then GRID_ARGS="--datastore_mount_dir ${{inputs.datastore_mount_dir}} $GRID_ARGS"; fi
 
-          gridai.py cli "grid session create ${GRID_ARGS}" status_to_kv --gha True
-      - id: gridai-obj-status
-        run: |
-          gridai.py session ${{ steps.gridai-obj-create.outputs.name }} --gha True
+          gridai.py create_sess --grid_args " ${GRID_ARGS}" --gha True
+
       - run: |
-          if [ -z "$(echo ${{ steps.gridai-obj-status.outputs.obj-summary }} | grep -i 'running')" ]; then
+          if [ "${{ steps.gridai-obj-status.outputs.match-status }}" != "running" ]; then
             exit 1
           fi
 
@@ -98,9 +87,9 @@ jobs:
           gridai.py cli "grid session pause ${{ steps.gridai-obj-create.outputs.name }}"
       - id: gridai-obj-status-2
         run: |
-          gridai.py session ${{ steps.gridai-obj-create.outputs.name }} --obj_status_expr 'paused|failed' --gha True
+          gridai.py status_sess ${{ steps.gridai-obj-create.outputs.name }} --status3 'paused' --gha True
       - run: |
-          if [ -z "$(echo ${{ steps.gridai-obj-status-2.outputs.obj-summary }} | grep -i 'paused')" ]; then
+          if [ "${{ steps.gridai-obj-status-2.outputs.match-status }}" != "paused" ]; then
             exit 1
           fi
 
@@ -110,9 +99,9 @@ jobs:
           gridai.py cli "grid session resume ${{ steps.gridai-obj-create.outputs.name }}"
       - id: gridai-obj-status-3
         run: |
-          gridai.py session ${{ steps.gridai-obj-create.outputs.name }} --obj_status_expr 'running|failed' --gha True
+          gridai.py status_sess ${{ steps.gridai-obj-create.outputs.name }} --status3 'running' --gha True
       - run: |
-          if [ -z "$(echo ${{ steps.gridai-obj-status-3.outputs.obj-summary }} | grep -i 'running')" ]; then
+          if [ "${{ steps.gridai-obj-status-3.outputs.match-status }}" != "running" ]; then
             exit 1
           fi
 
@@ -140,5 +129,15 @@ jobs:
       - id: gridai-obj-delete
         run: |
           gridai.py cli "grid session delete ${{ steps.gridai-obj-create.outputs.name }}" --gha True
-         
+      - id: gridai-obj-delete-2
+        run: |
+          # no status2 is accepted as the object should be deleted
+          gridai.py status_sess ${{ steps.gridai-obj-create.outputs.name }} --filter1_len 0 --status2 "^$" --gha True
+      - run: |
+          if [ "${{ steps.gridai-obj-delete-2.outputs.obj-exit-code }}" == "0" && "${{ steps.gridai-obj-delete-2.outputs.filter1-cnt }}" == "0" ]; then
+            echo "session delete: success"
+          else
+            echo "session delete: fail - ${{ steps.gridai-obj-create.outputs.name }} still exists in ${{ steps.gridai-obj-create.outputs.match-status }}"
+            exit 1
+          fi         
 

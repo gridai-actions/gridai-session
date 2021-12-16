@@ -1,9 +1,14 @@
 name: 'Grid.ai Session CPU'
 on:
+  workflow_dispatch:
   push:
     paths:
       - action.yml
       - .github/workflows/unittest-cpu.yml
+  schedule:
+  # run at 13 min past the hour every day
+  # MIN HOUR DOM MON DOW CMD
+    - cron: 23 2 * * *      
 jobs:
   unittests:
     strategy:

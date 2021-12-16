@@ -10,16 +10,18 @@ on:
   # MIN HOUR DOM MON DOW CMD
     - cron: 23 5 * * *            
 jobs:
-  create_session:  
+  create-session:  
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    outputs:
+      name: ${{ steps.gridai-obj-create.outputs.name }}
     steps:
       - uses: gridai-actions/gridai-login@v0
         with:
           gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
           gridai-key: ${{ secrets.GRIDAI_KEY }} 
       - id: gridai-obj-create
-      - run: |
+        run: |
           gridai.py create_sess --grid_args " ${GRID_ARGS}" --gha True
       - run: |
           if [ "${{ steps.gridai-obj-create.outputs.match-status }}" != "running" ]; then
@@ -33,6 +35,7 @@ jobs:
     with:
       os: ubuntu-latest
       instance_type: t2.medium
+      name: {{ needs.create-session.outputs.name }}
     secrets:  
       gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
       gridai-key: ${{ secrets.GRIDAI_KEY }}   

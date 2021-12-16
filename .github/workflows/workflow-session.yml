@@ -78,6 +78,7 @@ jobs:
 
       - run: |
           if [ "${{ steps.gridai-obj-create.outputs.match-status }}" != "running" ]; then
+            echo "grid session: failed with ${{ steps.gridai-obj-create.outputs.error }}"
             exit 1
           fi
 
@@ -90,6 +91,7 @@ jobs:
           gridai.py status_sess ${{ steps.gridai-obj-create.outputs.name }} --status3 'paused' --gha True
       - run: |
           if [ "${{ steps.gridai-obj-pause-2.outputs.match-status }}" != "paused" ]; then
+            echo "grid session: failed with ${{ steps.gridai-obj-pause-2.outputs.error }}"
             exit 1
           fi
 
@@ -102,6 +104,7 @@ jobs:
           gridai.py status_sess ${{ steps.gridai-obj-create.outputs.name }} --status3 'running' --gha True
       - run: |
           if [ "${{ steps.gridai-obj-resume-2.outputs.match-status }}" != "running" ]; then
+            echo "grid session: failed with ${{ steps.gridai-obj-resume-2.outputs.error }}"
             exit 1
           fi
 

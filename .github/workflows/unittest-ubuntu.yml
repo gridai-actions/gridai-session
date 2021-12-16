@@ -18,7 +18,14 @@ jobs:
         with:
           gridai-username: ${{ secrets.gridai-username }} 
           gridai-key: ${{ secrets.gridai-key }} 
-      
+      - id: gridai-obj-create
+          gridai.py create_sess --grid_args " ${GRID_ARGS}" --gha True
+      - run: |
+          if [ "${{ steps.gridai-obj-create.outputs.match-status }}" != "running" ]; then
+            echo "grid session: failed with ${{ steps.gridai-obj-create.outputs.error }}"
+            exit 1
+          fi
+
   cpu-session:
     needs: create_session
     uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main

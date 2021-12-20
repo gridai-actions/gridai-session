@@ -7,6 +7,10 @@ on:
         required: true
         type: string 
       # grid session variations
+      grid-args:
+        required: false
+        default: "" 
+        type: string      
       name:
         required: false
         default: s$(date '+%y%m%d-%H%M%S') 
@@ -38,6 +42,7 @@ on:
       # CLI Logins
       gridai-url:
         defaults: ""
+        type: string        
         required: false
     secrets:
       # CLI Logins
@@ -68,7 +73,7 @@ jobs:
       # create
       - id: gridai-obj-create
         run: |
-          export GRID_ARGS=""
+          export GRID_ARGS="${{grid-args}}"
           if [ ! -z "${{inputs.name}}" ]; then GRID_ARGS="--name ${{inputs.name}} $GRID_ARGS"; fi
           if [ ! -z "${{inputs.description}}" ]; then GRID_ARGS="--description ${{inputs.description}} $GRID_ARGS"; fi
           if [ ! -z "${{inputs.cluster}}" ]; then GRID_ARGS="--cluster ${{inputs.cluster}} $GRID_ARGS"; fi

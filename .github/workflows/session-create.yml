@@ -41,7 +41,7 @@ on:
         type: string      
       # CLI Logins
       gridai-url:
-        defaults: ""
+        default: ""
         type: string        
         required: false          
     secrets:

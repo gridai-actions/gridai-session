@@ -8,37 +8,14 @@ on:
         type: string 
       # grid session variations
       name:
-        required: false
-        default: s$(date '+%y%m%d-%H%M%S') 
-        type: string
-      description:
-        required: false
-        type: string
-      cluster:
-        required: false
+        required: true
         type: string
       instance_type:
-        required: false
+        required: true
         type: string        
       use_spot:
         required: false
         type: string        
-      disk_size:
-        required: false
-        type: string        
-      datastore_name:
-        required: false
-        type: string        
-      datastore_version:
-        required: false
-        type: string        
-      datastore_mount_dir:
-        required: false
-        type: string        
-      # CLI Logins
-      gridai-url:
-        defaults: ""
-        required: false
     secrets:
       # CLI Logins
       gridai-username:
@@ -63,23 +40,14 @@ jobs:
           python-venv: ${{ matrix.python-venv }}
           gridai-username: ${{ secrets.gridai-username }} 
           gridai-key: ${{ secrets.gridai-key }} 
-          gridai-url: ${{ inputs.grid-url }}
 
       # create
       - id: gridai-obj-create
         run: |
           export GRID_ARGS=""
-          if [ ! -z "${{inputs.name}}" ]; then GRID_ARGS="--name ${{inputs.name}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.description}}" ]; then GRID_ARGS="--description ${{inputs.description}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.cluster}}" ]; then GRID_ARGS="--cluster ${{inputs.cluster}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.instance_type}}" ]; then GRID_ARGS="--instance_type ${{inputs.instance_type}} $GRID_ARGS"; fi
           if [ ! -z "${{inputs.use_spot}}" ]; then GRID_ARGS="--use_spot $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.disk_size}}" ]; then GRID_ARGS="--disk_size ${{inputs.disk_size}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.datastore_name}}" ]; then GRID_ARGS="--datastore_name ${{inputs.datastore_name}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.datastore_version}}" ]; then GRID_ARGS="--datastore_version ${{inputs.datastore_version}} $GRID_ARGS"; fi
-          if [ ! -z "${{inputs.datastore_mount_dir}}" ]; then GRID_ARGS="--datastore_mount_dir ${{inputs.datastore_mount_dir}} $GRID_ARGS"; fi
 
-          gridai.py create_sess --grid_args " ${GRID_ARGS}" --gha True
+          gridai.py cli "grid session change-instance-type ${GRID_ARGS}" ${{inputs.name}} {{inputs.instance_type}} --gha True
 
       - run: |
           if [ "${{ steps.gridai-obj-create.outputs.match-status }}" != "running" ]; then
@@ -90,7 +58,7 @@ jobs:
       # pause
       - id: gridai-obj-pause
         run: |
-          gridai.py cli "grid session pause ${{ steps.gridai-obj-create.outputs.name }}" --gha True
+          gridai.py cli "grid session pause ${{ steps.gridai-obj-create.outputs.name }}"
       - id: gridai-obj-pause-2
         run: |
           gridai.py status_sess ${{ steps.gridai-obj-create.outputs.name }} --status3 'paused' --gha True
@@ -103,7 +71,7 @@ jobs:
       # resume
       - id: gridai-obj-resume
         run: |
-          gridai.py cli "grid session resume ${{ steps.gridai-obj-create.outputs.name }}" --gha True
+          gridai.py cli "grid session resume ${{ steps.gridai-obj-create.outputs.name }}"
       - id: gridai-obj-resume-2
         run: |
           gridai.py status_sess ${{ steps.gridai-obj-create.outputs.name }} --status3 'running' --gha True

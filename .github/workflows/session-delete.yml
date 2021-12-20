@@ -1,0 +1,53 @@
+name: 'Workflow Session Delete'
+on:
+  workflow_call:
+    inputs:
+      # CLI Environment Variations
+      os:
+        required: true
+        type: string 
+      # grid session variations
+      name:
+        required: true
+        type: string    
+    secrets:
+      # CLI Logins
+      gridai-username:
+        required: true
+      gridai-key:
+        required: true
+jobs:
+  unittests:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        python-version: [3.8] #, 3.9]       
+        python-venv: [""]     #  ,"venv"]     
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 60
+    steps:
+
+      - uses: gridai-actions/gridai-login@v0
+        with:
+          python-version: ${{ matrix.python-version }}
+          python-venv: ${{ matrix.python-venv }}
+          gridai-username: ${{ secrets.gridai-username }} 
+          gridai-key: ${{ secrets.gridai-key }} 
+
+      # delete
+      - id: gridai-obj-delete
+        run: |
+          gridai.py cli "grid session delete ${{ inputs.name }}" --gha True
+      - id: gridai-obj-delete-2
+        run: |
+          # status3=".*" will fail when a session in terminate state and additional polling is required
+          gridai.py status_sess ${{ inputs.name }} --filter1_len 0 --status3 ".*" --gha True
+      - run: |
+          if [[ "${{ steps.gridai-obj-delete-2.outputs.obj-exit-code }}" == "0" && "${{ steps.gridai-obj-delete-2.outputs.filter1-cnt }}" == "0" ]]; then
+            echo "session delete: success"
+          else
+            echo "session delete: fail - ${{ inputs.name }} still exists in ${{ steps.gridai-obj-delete-2.outputs.match-status }}"
+            exit 1
+          fi         
+

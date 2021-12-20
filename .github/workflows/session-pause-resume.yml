@@ -1,0 +1,85 @@
+name: 'Workflow Session'
+on:
+  workflow_call:
+    inputs:
+      # CLI Environment Variations
+      os:
+        required: true
+        type: string 
+      # grid session variations
+      name:
+        required: true
+        type: string
+    secrets:
+      # CLI Logins
+      gridai-username:
+        required: true
+      gridai-key:
+        required: true
+jobs:
+  unittests:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        python-version: [3.8] #, 3.9]       
+        python-venv: [""]     #  ,"venv"]     
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 60
+    steps:
+
+      - uses: gridai-actions/gridai-login@v0
+        with:
+          python-version: ${{ matrix.python-version }}
+          python-venv: ${{ matrix.python-venv }}
+          gridai-username: ${{ secrets.gridai-username }} 
+          gridai-key: ${{ secrets.gridai-key }} 
+
+
+      # pause
+      - id: gridai-obj-pause
+        run: |
+          gridai.py cli "grid session pause ${{ inputs.name }}"
+      - id: gridai-obj-pause-2
+        run: |
+          gridai.py status_sess ${{ inputs.name }} --status3 'paused' --gha True
+      - run: |
+          if [ "${{ steps.gridai-obj-pause-2.outputs.match-status }}" != "paused" ]; then
+            echo "grid session: failed with ${{ steps.gridai-obj-pause-2.outputs.error }}"
+            exit 1
+          fi
+
+      # resume
+      - id: gridai-obj-resume
+        run: |
+          gridai.py cli "grid session resume ${{ inputs.name }}"
+      - id: gridai-obj-resume-2
+        run: |
+          gridai.py status_sess ${{ inputs.name }} --status3 'running' --gha True
+      - run: |
+          if [ "${{ steps.gridai-obj-resume-2.outputs.match-status }}" != "running" ]; then
+            echo "grid session: failed with ${{ steps.gridai-obj-resume-2.outputs.error }}"
+            exit 1
+          fi
+
+      # run commands, scp to and from
+      - run: |
+          # run some commands
+          grid session ssh ${{ inputs.name }} "hostname; conda env list" | tee grid.session.ssh.1.log
+          # scp to remote
+          scp grid.session.ssh.1.log ${{ inputs.name }}:.
+          # verify transfer
+          grid session ssh ${{ inputs.name }} "ls grid.session.ssh.1.log" | tee grid.session.ssh.2.log
+          if [ -z "$(grep grid.session.ssh.1.log grid.session.ssh.2.log)" ]; then
+            echo "Error: file grid.session.ssh.1.log not found in remote"
+            exit 1
+          fi
+          # scp from remote
+          scp ${{ inputs.name }}:grid.session.ssh.1.log remote.grid.session.ssh.1.log
+          diff grid.session.ssh.1.log remote.grid.session.ssh.1.log
+          if [ $? -ne 0 ]; then
+            echo "Error: grid.session.ssh.1.log remote.grid.session.ssh.1.log different"
+            exit 1
+          fi
+      
+

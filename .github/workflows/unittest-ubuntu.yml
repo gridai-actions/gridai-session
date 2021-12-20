@@ -29,23 +29,41 @@ jobs:
             exit 1
           fi
 
-  cpu-session:
+  pause-resume-t2-medium:
     needs: create-session
-    uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main
+    uses: gridai-actions/gridai-session/.github/workflows/session-pause-resume.yml@main
     with:
       os: ubuntu-latest
-      instance_type: t2.medium
       name: ${{ needs.create-session.outputs.name }}
     secrets:  
       gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
       gridai-key: ${{ secrets.GRIDAI_KEY }}   
 
-  gpu-session:
-    needs: cpu-session
-    uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main
+  change-t2-large:
+    needs: create-session
+    uses: gridai-actions/gridai-session/.github/workflows/session-change-instance-type.yml@main
     with:
       os: ubuntu-latest
-      instance_type: g4dn.xlarge
+      instance_type: t2.large
+      name: ${{ needs.create-session.outputs.name }}
+    secrets:  
+      gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
+      gridai-key: ${{ secrets.GRIDAI_KEY }}   
+
+  pause-resume-t2-large:
+    needs: cpu-session
+    uses: gridai-actions/gridai-session/.github/workflows/session-pause-resume.yml@main
+    with:
+      os: ubuntu-latest
     secrets:  
       gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
       gridai-key: ${{ secrets.GRIDAI_KEY }}  
+
+  session-delete:
+    needs: cpu-session
+    uses: gridai-actions/gridai-session/.github/workflows/session-delete.yml@main
+    with:
+      os: ubuntu-latest
+    secrets:  
+      gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
+      gridai-key: ${{ secrets.GRIDAI_KEY }}   

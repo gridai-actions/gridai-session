@@ -4,18 +4,40 @@ on:
   push:
     paths:
       - action.yml
-      - .github/workflows/workflow-session.yml
+      - .github/workflows/session-create.yml
+      - .github/workflows/session-delete.yml
+      - .github/workflows/session-pause-resume.yml
       - .github/workflows/unittest-mac.yml
   schedule:
   # run at 13 min past the hour every day
   # MIN HOUR DOM MON DOW CMD
     - cron: 23 4 * * *            
 jobs:
-  cpu-session:
-    uses: gridai-actions/gridai-session/.github/workflows/workflow-session.yml@main
+  create-session:
+    uses: gridai-actions/gridai-session/.github/workflows/workflow-create.yml@main
     with:
       os: ubuntu-latest
       instance_type: t2.medium
     secrets:  
       gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
-      gridai-key: ${{ secrets.GRIDAI_KEY }}       
+      gridai-key: ${{ secrets.GRIDAI_KEY }}
+
+  pause-resume-t2-medium:
+    needs: create-session
+    uses: gridai-actions/gridai-session/.github/workflows/session-pause-resume.yml@main
+    with:
+      os: ubuntu-latest
+      name: ${{ needs.create-session.outputs.name }}
+    secrets:  
+      gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
+      gridai-key: ${{ secrets.GRIDAI_KEY }}   
+
+  delete-session:
+    needs: pause-resume-t2-medium
+    uses: gridai-actions/gridai-session/.github/workflows/session-delete.yml@main
+    with:
+      os: ubuntu-latest
+      name: ${{ needs.create-session.outputs.name }}
+    secrets:  
+      gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
+      gridai-key: ${{ secrets.GRIDAI_KEY }}         

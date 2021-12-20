@@ -79,7 +79,7 @@ jobs:
       # create
       - id: gridai-obj-create
         run: |
-          export GRID_ARGS="${{grid-args}}"
+          export GRID_ARGS="${{inputs.grid-args}}"
           if [ ! -z "${{inputs.name}}" ]; then GRID_ARGS="--name ${{inputs.name}} $GRID_ARGS"; fi
           if [ ! -z "${{inputs.cluster}}" ]; then GRID_ARGS="--cluster ${{inputs.cluster}} $GRID_ARGS"; fi
           if [ ! -z "${{inputs.description}}" ]; then GRID_ARGS="--description ${{inputs.description}} $GRID_ARGS"; fi

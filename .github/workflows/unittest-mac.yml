@@ -14,7 +14,7 @@ on:
     - cron: 23 4 * * *            
 jobs:
   create-session:
-    uses: gridai-actions/gridai-session/.github/workflows/workflow-create.yml@main
+    uses: gridai-actions/gridai-session/.github/workflows/session-create.yml@main
     with:
       os: ubuntu-latest
       instance_type: t2.medium

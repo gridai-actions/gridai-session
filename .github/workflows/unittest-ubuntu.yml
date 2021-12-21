@@ -40,7 +40,7 @@ jobs:
       gridai-key: ${{ secrets.GRIDAI_KEY }}   
 
   change-t2-large:
-    needs: create-session
+    needs: [pause-resume-t2-medium,create-session]
     uses: gridai-actions/gridai-session/.github/workflows/session-change-instance-type.yml@main
     with:
       os: ubuntu-latest
@@ -51,7 +51,7 @@ jobs:
       gridai-key: ${{ secrets.GRIDAI_KEY }}   
 
   pause-resume-t2-large:
-    needs: cpu-session
+    needs: [change-t2-large,create-session]
     uses: gridai-actions/gridai-session/.github/workflows/session-pause-resume.yml@main
     with:
       os: ubuntu-latest
@@ -61,7 +61,7 @@ jobs:
       gridai-key: ${{ secrets.GRIDAI_KEY }}  
 
   session-delete:
-    needs: cpu-session
+    needs: [pause-resume-t2-large,create-session]
     uses: gridai-actions/gridai-session/.github/workflows/session-delete.yml@main
     with:
       os: ubuntu-latest

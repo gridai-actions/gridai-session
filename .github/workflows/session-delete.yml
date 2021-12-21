@@ -10,6 +10,11 @@ on:
       name:
         required: true
         type: string    
+      # CLI Logins
+      grid-url:
+        default: ""
+        type: string        
+        required: false    
     secrets:
       # CLI Logins
       gridai-username:
@@ -34,6 +39,7 @@ jobs:
           python-venv: ${{ matrix.python-venv }}
           gridai-username: ${{ secrets.gridai-username }} 
           gridai-key: ${{ secrets.gridai-key }} 
+          grid-url: ${{ inputs.grid-url }}
 
       # delete
       - id: gridai-obj-delete

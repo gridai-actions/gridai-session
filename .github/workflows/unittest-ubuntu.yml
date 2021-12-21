@@ -55,6 +55,7 @@ jobs:
     uses: gridai-actions/gridai-session/.github/workflows/session-pause-resume.yml@main
     with:
       os: ubuntu-latest
+      name: ${{ needs.create-session.outputs.name }}
     secrets:  
       gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
       gridai-key: ${{ secrets.GRIDAI_KEY }}  
@@ -64,6 +65,7 @@ jobs:
     uses: gridai-actions/gridai-session/.github/workflows/session-delete.yml@main
     with:
       os: ubuntu-latest
+      name: ${{ needs.create-session.outputs.name }}
     secrets:  
       gridai-username: ${{ secrets.GRIDAI_USERNAME }} 
       gridai-key: ${{ secrets.GRIDAI_KEY }}   

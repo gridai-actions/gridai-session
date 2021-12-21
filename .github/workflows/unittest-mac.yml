@@ -33,7 +33,7 @@ jobs:
       gridai-key: ${{ secrets.GRIDAI_KEY }}   
 
   delete-session:
-    needs: pause-resume-t2-medium
+    needs: [pause-resume-t2-medium, create-session]
     uses: gridai-actions/gridai-session/.github/workflows/session-delete.yml@main
     with:
       os: ubuntu-latest

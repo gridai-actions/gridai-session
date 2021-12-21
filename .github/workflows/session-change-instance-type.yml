@@ -16,6 +16,11 @@ on:
       use_spot:
         required: false
         type: string        
+      # CLI Logins
+      grid-url:
+        default: ""
+        type: string        
+        required: false    
     secrets:
       # CLI Logins
       gridai-username:
@@ -39,7 +44,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           python-venv: ${{ matrix.python-venv }}
           gridai-username: ${{ secrets.gridai-username }} 
-          gridai-key: ${{ secrets.gridai-key }} 
+          grid-key: ${{ secrets.gridai-key }} 
 
       # create
       - id: gridai-obj-create
